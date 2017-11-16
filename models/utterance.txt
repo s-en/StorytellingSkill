@@ -1,0 +1,15 @@
+TellStoryIntent {title}
+TellStoryIntent {title} を読んで
+TellStoryIntent {title} が聞きたい
+TellStoryIntent {title} を開始
+TellStoryIntent {title} を始めて
+AMAZON.YesIntent もちろん
+AMAZON.YesIntent 聞きたい
+AMAZON.YesIntent うん
+AMAZON.YesIntent 聞く
+AMAZON.YesIntent 続けて
+AMAZON.NoIntent 聞きたくない
+AMAZON.NoIntent 聞かない
+AMAZON.StopIntent もういい
+AMAZON.StopIntent やめて
+AMAZON.StopIntent 終了
