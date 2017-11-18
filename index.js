@@ -97,16 +97,13 @@ const storyHandlers = {
     }
   },
   "AMAZON.StopIntent": function() {
-    this.response.speak("ストップ!");
-    this.emit(':responseReady');
+    this.emit(':tell', "");
   },
   "AMAZON.CancelIntent": function() {
-    this.response.speak("キャンセル!");
-    this.emit(':responseReady');
+    this.emit(':tell', "");
   },
   'AMAZON.HelpIntent': function () {
-    this.response.speak("ヘルプ!");
-    this.emit(':responseReady');
+    this.emit(':ask', 'このスキルでは、有名な日本昔ばなしを読むことができます。日本昔ばなしを開いて、と言ってみてください。','日本昔ばなしを開いて、と言ってみてください。');
   },
   'SessionEndedRequest': function () {
     this.attributes["STATE"] = "";
@@ -131,11 +128,10 @@ const askSequelHandlers = Alexa.CreateStateHandler(states.ASKSEQUEL, {
   },
   'AMAZON.NoIntent': function() {
     this.attributes["STATE"] = "";
-    this.emit(':tell', '');
+    this.emit(':tell', "");
   },
   "AMAZON.CancelIntent": function() {
-    this.response.speak("キャンセル!");
-    this.emit('AMAZON.NoIntent');
+    this.emit(':tell', "");
   },
   "AMAZON.StopIntent": function() {
     this.emit('AMAZON.NoIntent');
