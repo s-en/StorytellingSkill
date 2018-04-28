@@ -45,7 +45,10 @@ const storyHandlers = {
       this.attributes['chapter'] = 0;
       this.emit("TellStoryIntent");
     }
-    const intentName = this.event.request.intent.name;
+    let intentName = "TellStoryIntent";
+    if(this.event.request.intent){
+      intentName = this.event.request.intent.name;
+    }
 
     this.emit(intentName);
   },
@@ -64,6 +67,8 @@ const storyHandlers = {
       rand = this.attributes['rand'];
     }
     if(!this.attributes['title']){
+      this.attributes['title'] = getTitle();
+    }else if(this.attributes['title']=='日本昔ばなし'|| this.attributes['title']=='日本むかし話'|| this.attributes['title']=='日本昔話'){
       this.attributes['title'] = getTitle();
     }
     title = this.attributes['title'];
