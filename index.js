@@ -51,15 +51,22 @@ const storyHandlers = {
   },
   "TellStoryIntent": function() {
     var title = "タイトル名";
+    var rand = Math.floor( Math.random() * 8 );
 
     if(this.event.request.type == "IntentRequest" &&
         this.event.request.intent.name == "TellStoryIntent"){
       this.attributes['title'] = this.event.request.intent.slots.title.value;
+      this.attributes['name'] = this.event.request.intent.slots.name.value;
+      this.attributes['rand'] = rand;
       this.attributes['chapter'] = 0;
     }
-    if(this.attributes['title']){
-      title = this.attributes['title'];
+    if(this.attributes['rand']){
+      rand = this.attributes['rand'];
     }
+    if(!this.attributes['title']){
+      this.attributes['title'] = getTitle();
+    }
+    title = this.attributes['title'];
     if(!titleFile[title]){
       console.log(title + " not found");
       this.emit(':tell', title+"が見つかりません");
@@ -72,7 +79,7 @@ const storyHandlers = {
     if(this.attributes['chapter']){
       chapnum = this.attributes['chapter'];
     }
-    const chapter = story[chapnum].valueOf().replace(/\n/g, "")
+    let chapter = story[chapnum].valueOf().replace(/\n/g, "")
                     .replace(/\-2「(.*?)」/g, "<prosody pitch=\"x-low\"><p>$1</p></prosody>")
                     .replace(/\-1「(.*?)」/g, "<prosody pitch=\"low\"><p>$1</p></prosody>")
                     .replace(/\+1「(.*?)」/g, "<prosody pitch=\"high\"><p>$1</p></prosody>")
@@ -88,6 +95,66 @@ const storyHandlers = {
                     .replace(/\+0f「(.*?)」/g, "<prosody rate=\"130%\"><p>$1</p></prosody>")
                     .replace(/\+0s「(.*?)」/g, "<prosody rate=\"70%\"><p>$1</p></prosody>")
                     .replace(/「/g, "<p>").replace(/」/g, "</p>");
+    const myname = this.attributes['name'];
+    if(myname){
+      if(title == "hanasaka"){
+        chapter = chapter.replace(/おじいさん/g, myname);
+      }
+      if(title == "kachikachi"){
+        chapter = chapter.replace(/おじいさん/g, myname);
+      }
+      if(title == "kintaro"){
+        chapter = chapter.replace(/金太郎/g, myname);
+      }
+      if(title == "kobutori"){
+        chapter = chapter.replace(/おじいさん/g, myname)
+                        .replace(/じいさん/g, myname);
+      }
+      if(title == "momotaro"){
+        if(rand <= 2){
+          chapter = chapter.replace(/桃太郎/g, myname);
+        }else if(rand == 3){
+          chapter = chapter.replace(/犬/g, myname)
+        }else if(rand == 4){
+          chapter = chapter.replace(/猿/g, myname)
+        }else if(rand == 5){
+          chapter = chapter.replace(/キジ/g, myname)
+        }else{
+          chapter = chapter.replace(/鬼/g, myname)
+        }
+      }
+      if(title == "nezumiyome"){
+        chapter = chapter.replace(/娘/g, myname);
+      }
+      if(title == "sarukani"){
+        if(rand < 4){
+          chapter = chapter.replace(/猿/g, myname);
+        }else{
+          chapter = chapter.replace(/蟹/g, myname);
+        }
+      }
+      if(title == "shitakiri"){
+        if(rand < 4){
+          chapter = chapter.replace(/おじいさん/g, myname);
+        }else{
+          chapter = chapter.replace(/おばあさん/g, myname);
+        }
+      }
+      if(title == "ubaste"){
+        chapter = chapter.replace(/お百姓/g, myname);
+      }
+      if(title == "urashima"){
+        if(rand < 6){
+          chapter = chapter.replace(/浦島太郎/g, myname)
+                      .replace(/浦島/g, myname);
+        }else if(rand < 7){
+          chapter = chapter.replace(/乙姫/g, myname)
+        }else{
+          chapter = chapter.replace(/亀/g, myname)
+        }
+      }
+      console.log(chapter);
+    }
     if(chapnum >= story.length - 1){
       this.attributes["STATE"] = "";
       this.emit(':tell', chapter);
@@ -118,8 +185,7 @@ const askSequelHandlers = Alexa.CreateStateHandler(states.ASKSEQUEL, {
     this.emit('NewSession');
   },
   "TellStoryIntent": function() {
-    this.attributes["STATE"] = "";
-    this.emit('TellStoryIntent');
+    this.emit(':ask', 'お話の続きを聴きますか？');
   },
   'AMAZON.YesIntent': function() {
     this.attributes["STATE"] = "";
@@ -131,10 +197,12 @@ const askSequelHandlers = Alexa.CreateStateHandler(states.ASKSEQUEL, {
     this.emit(':tell', "");
   },
   "AMAZON.CancelIntent": function() {
+    this.attributes["STATE"] = "";
     this.emit(':tell', "");
   },
   "AMAZON.StopIntent": function() {
-    this.emit('AMAZON.NoIntent');
+    this.attributes["STATE"] = "";
+    this.emit(':tell', "");
   },
   'SessionEndedRequest': function () {
     this.attributes["STATE"] = "";
